@@ -13,14 +13,23 @@ provider "azurerm" {
 
 # type d'objet - "nom resource" - "identifiant resource"
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-rlabbe"
-  location = "West Europe"
+  name     = "rg-${var.project_name}${var.environment_suffix}"
+  location = var.location
 }
 
-output "main-rg-name" {
-  value = azurerm_resource_group.rg.name
+resource "azurerm_service_plan" "sp" {
+  name                = "sp-${var.project_name}${var.environment_suffix}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  os_type             = "Linux"
+  sku_name            = "P1v2"
 }
 
-output "main-rg-id" {
-  value = azurerm_resource_group.rg.id
+resource "azurerm_linux_web_app" "lwa" {
+  name                = "lwa-${var.project_name}${var.environment_suffix}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  service_plan_id     = azurerm_service_plan.sp.id
+
+  site_config {}
 }
