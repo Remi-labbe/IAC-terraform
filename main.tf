@@ -5,6 +5,13 @@ terraform {
       version = "3.48.0"
     }
   }
+  backend "azurerm" {
+    resource_group_name  = "rg-tfstate"
+    storage_account_name = "samfolabs2023"
+    container_name       = "tfstate"
+    key                  = "rlabbe.tfstate"
+
+  }
 }
 
 provider "azurerm" {
