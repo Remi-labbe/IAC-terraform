@@ -23,6 +23,7 @@ resource "azurerm_service_plan" "sp" {
 }
 
 resource "azurerm_linux_web_app" "lwa" {
+  count               = var.environment_suffix == "-dev" ? 1 : 0
   name                = "lwa-${var.project_name}${var.environment_suffix}"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
