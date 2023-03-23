@@ -23,6 +23,13 @@ resource "azurerm_mssql_server" "sqlsrv" {
   administrator_login_password = data.azurerm_key_vault_secret.db-password.value
 }
 
+resource "azurerm_mssql_firewall_rule" "sqlsrv-fr" {
+  name             = "allow-azure"
+  server_id        = azurerm_mssql_server.sqlsrv.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
+}
+
 resource "azurerm_mssql_database" "sql-db" {
   name           = "RabbitMqDemo"
   server_id      = azurerm_mssql_server.sqlsrv.id
@@ -52,7 +59,11 @@ resource "azurerm_linux_web_app" "lwa" {
   location            = azurerm_service_plan.sp.location
   service_plan_id     = azurerm_service_plan.sp.id
 
-  site_config {}
+  site_config {
+    application_stack {
+      dotnet_version = "6.0"
+    }
+  }
 
   connection_string {
     name  = "DefaultConnection"
